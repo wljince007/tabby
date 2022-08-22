@@ -144,8 +144,10 @@ export class SFTPSession {
         this.sftp.fastPut(remotepath,path,
             (err: any) => {
                 if (err) {
-                    this.logger.error("upload from ${path} to ${remotepath} err:",err)
+                    this.logger.error(`upload from ${path} to ${remotepath} err:${err}`)
                     throw err
+                }else {
+                    this.logger.info(`upload from ${path} to ${remotepath} succ!`)
                 }
                 })
 
@@ -178,8 +180,10 @@ export class SFTPSession {
         this.sftp.fastGet(path, remotepath,
             (err: any) => {
                 if (err) {
-                    this.logger.error("download from ${remotepath} to ${path} err:",err)
+                    this.logger.error(`download from ${remotepath} to ${path} err:${err}`)
                     throw err
+                }else {
+                    this.logger.info(`download from ${remotepath} to ${path} succ`)
                 }
             })
         // try {
