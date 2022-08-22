@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "exclude": ["node_modules", "dist"],
+  "sourceMap": true,
   "compilerOptions": {
     "baseUrl": "src"
   }

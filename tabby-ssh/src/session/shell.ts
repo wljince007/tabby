@@ -62,6 +62,7 @@ export class SSHShellSession extends BaseSession {
         })
 
         this.shell.on('data', data => {
+            this.logger.info('recv data:',String(data))
             this.emitOutput(data)
         })
 

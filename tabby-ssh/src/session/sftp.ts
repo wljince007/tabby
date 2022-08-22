@@ -140,46 +140,63 @@ export class SFTPSession {
 
     async upload (path: string, transfer: FileUpload): Promise<void> {
         this.logger.info('Uploading into', path)
-        const tempPath = path + '.tabby-upload'
-        try {
-            const handle = await this.open(tempPath, 'w')
-            while (true) {
-                const chunk = await transfer.read()
-                if (!chunk.length) {
-                    break
+        let remotepath = transfer.getFilePath()
+        this.sftp.fastPut(remotepath,path,
+            (err: any) => {
+                if (err) {
+                    this.logger.error("upload from ${path} to ${remotepath} err:",err)
+                    throw err
                 }
-                await handle.write(chunk)
-            }
-            handle.close()
-            try {
-                await this.unlink(path)
-            } catch { }
-            await this.rename(tempPath, path)
-            transfer.close()
-        } catch (e) {
-            transfer.cancel()
-            this.unlink(tempPath)
-            throw e
-        }
+                })
+
+        // const tempPath = path + '.tabby-upload'
+        // try {
+        //     const handle = await this.open(tempPath, 'w')
+        //     while (true) {
+        //         const chunk = await transfer.read()
+        //         if (!chunk.length) {
+        //             break
+        //         }
+        //         await handle.write(chunk)
+        //     }
+        //     handle.close()
+        //     try {
+        //         await this.unlink(path)
+        //     } catch { }
+        //     await this.rename(tempPath, path)
+        //     transfer.close()
+        // } catch (e) {
+        //     transfer.cancel()
+        //     this.unlink(tempPath)
+        //     throw e
+        // }
     }
 
     async download (path: string, transfer: FileDownload): Promise<void> {
         this.logger.info('Downloading', path)
-        try {
-            const handle = await this.open(path, 'r')
-            while (true) {
-                const chunk = await handle.read()
-                if (!chunk.length) {
-                    break
+        let remotepath = transfer.getFilePath()
+        this.sftp.fastGet(path, remotepath,
+            (err: any) => {
+                if (err) {
+                    this.logger.error("download from ${remotepath} to ${path} err:",err)
+                    throw err
                 }
-                await transfer.write(chunk)
-            }
-            transfer.close()
-            handle.close()
-        } catch (e) {
-            transfer.cancel()
-            throw e
-        }
+            })
+        // try {
+        //     const handle = await this.open(path, 'r')
+        //     while (true) {
+        //         const chunk = await handle.read()
+        //         if (!chunk.length) {
+        //             break
+        //         }
+        //         await transfer.write(chunk)
+        //     }
+        //     transfer.close()
+        //     handle.close()
+        // } catch (e) {
+        //     transfer.cancel()
+        //     throw e
+        // }
     }
 
     private _makeFile (p: string, entry: FileEntry): SFTPFile {

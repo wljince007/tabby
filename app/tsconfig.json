@@ -24,6 +24,7 @@
         ]
     },
     "compileOnSave": false,
+    "sourceMap": true,
     "exclude": [
         "dist",
         "node_modules",

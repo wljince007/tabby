@@ -11,7 +11,7 @@
                 "TABBY_DEV": "1"
             },
             "runtimeArgs": [
-                "--remote-debugging-port=9223",
+                "--remote-debugging-port=9225",
                 "app"
             ],
             "windows": {
@@ -22,9 +22,9 @@
             "name": "Electron: Renderer",
             "type": "pwa-chrome",
             "request": "attach",
-            "port": 9223,
-            "webRoot": "${workspaceFolder}",
-            "timeout": 30000
+            "port": 9225,
+            // "timeout": 30000,
+            "webRoot": "${workspaceFolder}"
         }
     ],
     "compounds": [
