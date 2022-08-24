@@ -124,19 +124,19 @@ export class SFTPPanelComponent {
     }
 
     async downloadFileOrDirectory (item: SFTPFile): Promise<void> {
-        if(item.isDirectory){
-
-        } else {
             const itemPath = item.fullPath
-            const transfer = await this.platform.startDownload(path.basename(itemPath), 0, 0)
-            if (!transfer) {
+            const properties: any[]  = ['showHiddenFiles', 'createDirectory','treatPackageAsDirectory'];
+            const savepath = await this.platform.getSavePath(path.basename(itemPath), properties)
+            if (!savepath) {
                 return
             }
-            this.sftp.download(itemPath, transfer)
-        }
+            this.sftp.downloadFileOrDirectory(itemPath, savepath)
     }
 
     async upload (): Promise<void> {
+        // const properties: any[] = ['openFile', 'openDirectory', 'showHiddenFiles', 'createDirectory','treatPackageAsDirectory','multiSelections'];
+        // const transfers = await this.platform.getSelectFiles(properties)
+
         const transfers = await this.platform.startUpload({ multiple: true })
         await Promise.all(transfers.map(t => this.uploadOne(t)))
     }

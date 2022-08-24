@@ -180,6 +180,34 @@ export class ElectronPlatformService extends PlatformService {
         this.electron.app.exit(0)
     }
 
+    async getSelectFiles (properties: any[]): Promise<string[]|null> {
+        const result = await this.electron.dialog.showOpenDialog(
+            this.hostWindow.getWindow(),
+            {
+                buttonLabel: this.translate.instant('Select'),
+                properties,
+            },
+        )
+        if (result.canceled) {
+            return []
+        }
+        return result.filePaths
+    }
+
+    async getSavePath (name: string, properties: any[]): Promise<string|null> {
+        const result = await this.electron.dialog.showSaveDialog(
+            this.hostWindow.getWindow(),
+            {
+                defaultPath: name,
+                properties,
+            },
+        )
+        if (!result.filePath) {
+            return null
+        }
+        return result.filePath
+    }
+
     async startUpload (options?: FileUploadOptions, paths?: string[]): Promise<FileUpload[]> {
         options ??= { multiple: false }
 

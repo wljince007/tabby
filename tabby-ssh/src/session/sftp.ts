@@ -142,7 +142,7 @@ export class SFTPSession {
         await promisify((f: any) => this.sftp.unlink(p, f))()
     }
 
-    uploadFile (localpath: string, remotepath: string): void {
+    async uploadFile (localpath: string, remotepath: string): Promise<void> {
         this.logger.info(`uploadFile from ${localpath} to ${remotepath}`)
         this.sftp.fastPut(localpath,remotepath,
             (err: any) => {
@@ -155,40 +155,30 @@ export class SFTPSession {
                 })
     }
 
-    uploadFileOrDirectorySync(localpath: string, remotepath: string): void {
-        this.logger.info(`upload from ${localpath} to ${remotepath}`)
+    async uploadFileOrDirectory(localpath: string, remotepath: string): Promise<void> {
+        this.logger.info(`uploadFileOrDirectory from ${localpath} to ${remotepath}`)
         let localpathstates = fsSync.statSync(localpath);
         if (localpathstates.isDirectory()){
             this.sftp.mkdir(remotepath, (err: any) => {})
-            // if(!this.sftp.exists(remotepath,(err: any) => {})){
-            //     await this.mkdir(remotepath)
-            // }
-            //读取文件夹下内容
             let files = fsSync.readdirSync(localpath);
-            //遍历文件
             for (const item in files) {
                 const localitemfullpath = localpath+'/'+files[item]
                 const remoteitemfullpath = remotepath+'/'+files[item]
                 let states = fsSync.statSync(localitemfullpath);
                 if(states.isDirectory()) {
-                    this.uploadFileOrDirectorySync(localitemfullpath, remoteitemfullpath)
+                    await this.uploadFileOrDirectory(localitemfullpath, remoteitemfullpath)
                 }else {
-                    this.uploadFile(localitemfullpath, remoteitemfullpath)
+                    await this.uploadFile(localitemfullpath, remoteitemfullpath)
                 }
             }
         }else {
-            this.uploadFile(localpath, remotepath)
+            await this.uploadFile(localpath, remotepath)
         }
-    }
-
-    async uploadFileOrDirectory(localpath: string, remotepath: string): Promise<void> {
-        this.uploadFileOrDirectorySync(localpath, remotepath)
     }
 
     async upload (path: string, transfer: FileUpload): Promise<void> {
         this.logger.info('Uploading into', path)
         let localPath = transfer.getFilePath()
-        // this.uploadFile(localPath,path)
         this.uploadFileOrDirectory(localPath,path)
 
         // const tempPath = path + '.tabby-upload'
@@ -214,18 +204,46 @@ export class SFTPSession {
         // }
     }
 
+    async downloadFile (remotepath: string, localpath: string): Promise<void> {
+        this.logger.info(`downloadFile from ${remotepath} to ${localpath}`)
+        this.sftp.fastGet(remotepath, localpath,
+            (err: any) => {
+                if (err) {
+                    this.logger.error(`downloadFile from ${remotepath} to ${localpath} err:${err}`)
+                    throw err
+                }else {
+                    this.logger.info(`downloadFile from ${remotepath} to ${localpath} succ!`)
+                }
+                })
+    }
+
+    async downloadFileOrDirectory(remotepath: string, localpath: string): Promise<void> {
+        this.logger.debug('readdir', remotepath)
+        const remotepathstat = await this.stat(remotepath)
+        if (remotepathstat.isDirectory){
+            fsSync.mkdir(localpath,remotepathstat.mode, (err: any) => {})
+            const entries = await wrapPromise(this.zone, promisify<FileEntry[]>(f => this.sftp.readdir(remotepath, f))())
+            for (let index = 0; index < entries.length; index++) {
+                const filename = entries[index].filename;
+                const localitemfullpath = localpath+'/'+filename
+                const remoteitemfullpath = remotepath+'/'+filename
+                const remoteitemfullpathstat = await this.stat(remoteitemfullpath)
+                if(remoteitemfullpathstat.isDirectory) {
+                    await this.downloadFileOrDirectory(remoteitemfullpath, localitemfullpath)
+                }else {
+                    await this.downloadFile(remoteitemfullpath, localitemfullpath)
+                }
+            }
+        }else {
+            await this.downloadFile(remotepath, localpath)
+        }
+    }
+
     async download (path: string, transfer: FileDownload): Promise<void> {
         this.logger.info('Downloading', path)
         let remotepath = transfer.getFilePath()
-        this.sftp.fastGet(path, remotepath,
-            (err: any) => {
-                if (err) {
-                    this.logger.error(`download from ${remotepath} to ${path} err:${err}`)
-                    throw err
-                }else {
-                    this.logger.info(`download from ${remotepath} to ${path} succ`)
-                }
-            })
+        this.downloadFile(remotepath, path)
+        
         // try {
         //     const handle = await this.open(path, 'r')
         //     while (true) {

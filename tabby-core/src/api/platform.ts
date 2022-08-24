@@ -101,6 +101,9 @@ export abstract class PlatformService {
     abstract loadConfig (): Promise<string>
     abstract saveConfig (content: string): Promise<void>
 
+    abstract getSelectFiles (properties: any[]): Promise<string[]|null>
+    abstract getSavePath (name: string, properties: any[]): Promise<string|null>
+
     abstract startDownload (name: string, mode: number, size: number): Promise<FileDownload|null>
     abstract startUpload (options?: FileUploadOptions): Promise<FileUpload[]>
 

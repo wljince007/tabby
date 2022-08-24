@@ -108,6 +108,13 @@ export class WebPlatformService extends PlatformService {
         window.close()
     }
 
+    async getSelectFiles (properties: any[]): Promise<string[]|null>{
+        return null
+    }
+    async getSavePath (name: string, properties: any[]): Promise<string|null>{
+        return null
+    }
+
     async startDownload (name: string, mode: number, size: number): Promise<FileDownload|null> {
         const transfer = new HTMLFileDownload(name, mode, size)
         this.fileTransferStarted.next(transfer)
