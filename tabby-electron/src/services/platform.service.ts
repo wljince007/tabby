@@ -183,7 +183,7 @@ export class ElectronPlatformService extends PlatformService {
     async startUpload (options?: FileUploadOptions, paths?: string[]): Promise<FileUpload[]> {
         options ??= { multiple: false }
 
-        const properties: any[] = ['openFile', 'treatPackageAsDirectory']
+        const properties: any[] = ['openFile', 'openDirectory', 'showHiddenFiles', 'createDirectory','treatPackageAsDirectory'];
         if (options.multiple) {
             properties.push('multiSelections')
         }
@@ -212,10 +212,12 @@ export class ElectronPlatformService extends PlatformService {
 
     async startDownload (name: string, mode: number, size: number, filePath?: string): Promise<FileDownload|null> {
         if (!filePath) {
+            const properties: any[]  = ['showHiddenFiles', 'createDirectory','treatPackageAsDirectory'];
             const result = await this.electron.dialog.showSaveDialog(
                 this.hostWindow.getWindow(),
                 {
                     defaultPath: name,
+                    properties,
                 },
             )
             if (!result.filePath) {

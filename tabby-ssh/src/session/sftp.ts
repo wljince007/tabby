@@ -1,4 +1,8 @@
 import * as C from 'constants'
+// import * as path from 'path';
+// import * as fs from 'fs/promises';
+// import * as os from 'os';
+import * as fsSync from 'fs';
 // eslint-disable-next-line @typescript-eslint/no-duplicate-imports, no-duplicate-imports
 import { Subject, Observable } from 'rxjs'
 import { posix as posixPath } from 'path'
@@ -138,18 +142,54 @@ export class SFTPSession {
         await promisify((f: any) => this.sftp.unlink(p, f))()
     }
 
-    async upload (path: string, transfer: FileUpload): Promise<void> {
-        this.logger.info('Uploading into', path)
-        let remotepath = transfer.getFilePath()
-        this.sftp.fastPut(remotepath,path,
+    uploadFile (localpath: string, remotepath: string): void {
+        this.logger.info(`uploadFile from ${localpath} to ${remotepath}`)
+        this.sftp.fastPut(localpath,remotepath,
             (err: any) => {
                 if (err) {
-                    this.logger.error(`upload from ${path} to ${remotepath} err:${err}`)
+                    this.logger.error(`upload from ${localpath} to ${remotepath} err:${err}`)
                     throw err
                 }else {
-                    this.logger.info(`upload from ${path} to ${remotepath} succ!`)
+                    this.logger.info(`upload from ${localpath} to ${remotepath} succ!`)
                 }
                 })
+    }
+
+    uploadFileOrDirectorySync(localpath: string, remotepath: string): void {
+        this.logger.info(`upload from ${localpath} to ${remotepath}`)
+        let localpathstates = fsSync.statSync(localpath);
+        if (localpathstates.isDirectory()){
+            this.sftp.mkdir(remotepath, (err: any) => {})
+            // if(!this.sftp.exists(remotepath,(err: any) => {})){
+            //     await this.mkdir(remotepath)
+            // }
+            //读取文件夹下内容
+            let files = fsSync.readdirSync(localpath);
+            //遍历文件
+            for (const item in files) {
+                const localitemfullpath = localpath+'/'+files[item]
+                const remoteitemfullpath = remotepath+'/'+files[item]
+                let states = fsSync.statSync(localitemfullpath);
+                if(states.isDirectory()) {
+                    this.uploadFileOrDirectorySync(localitemfullpath, remoteitemfullpath)
+                }else {
+                    this.uploadFile(localitemfullpath, remoteitemfullpath)
+                }
+            }
+        }else {
+            this.uploadFile(localpath, remotepath)
+        }
+    }
+
+    async uploadFileOrDirectory(localpath: string, remotepath: string): Promise<void> {
+        this.uploadFileOrDirectorySync(localpath, remotepath)
+    }
+
+    async upload (path: string, transfer: FileUpload): Promise<void> {
+        this.logger.info('Uploading into', path)
+        let localPath = transfer.getFilePath()
+        // this.uploadFile(localPath,path)
+        this.uploadFileOrDirectory(localPath,path)
 
         // const tempPath = path + '.tabby-upload'
         // try {

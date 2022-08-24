@@ -30,6 +30,12 @@ export class CommonSFTPContextMenu extends SFTPContextMenuItemProvider {
             },
             {
                 click: async () => {
+                    await panel.downloadFileOrDirectory(item)
+                },
+                label: this.translate.instant('Download'),
+            },
+            {
+                click: async () => {
                     if ((await this.platform.showMessageBox({
                         type: 'warning',
                         message: this.translate.instant('Delete {fullPath}?', item),

@@ -123,6 +123,19 @@ export class SFTPPanelComponent {
         }
     }
 
+    async downloadFileOrDirectory (item: SFTPFile): Promise<void> {
+        if(item.isDirectory){
+
+        } else {
+            const itemPath = item.fullPath
+            const transfer = await this.platform.startDownload(path.basename(itemPath), 0, 0)
+            if (!transfer) {
+                return
+            }
+            this.sftp.download(itemPath, transfer)
+        }
+    }
+
     async upload (): Promise<void> {
         const transfers = await this.platform.startUpload({ multiple: true })
         await Promise.all(transfers.map(t => this.uploadOne(t)))
@@ -130,7 +143,8 @@ export class SFTPPanelComponent {
 
     async uploadOne (transfer: FileUpload): Promise<void> {
         const savedPath = this.path
-        await this.sftp.upload(path.join(this.path, transfer.getName()), transfer)
+        // await this.sftp.upload(path.join(this.path, transfer.getName()), transfer)
+        await this.sftp.uploadFileOrDirectory(transfer.getFilePath(), path.join(this.path, transfer.getName()))
         if (this.path === savedPath) {
             await this.navigate(this.path)
         }
