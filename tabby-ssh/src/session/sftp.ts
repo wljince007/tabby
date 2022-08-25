@@ -241,8 +241,8 @@ export class SFTPSession {
 
     async download (path: string, transfer: FileDownload): Promise<void> {
         this.logger.info('Downloading', path)
-        let remotepath = transfer.getFilePath()
-        this.downloadFile(remotepath, path)
+        let localpath = transfer.getFilePath()
+        this.downloadFile(path, localpath)
         
         // try {
         //     const handle = await this.open(path, 'r')
