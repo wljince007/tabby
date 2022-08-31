@@ -176,34 +176,6 @@ export class SFTPSession {
         }
     }
 
-    async upload (path: string, transfer: FileUpload): Promise<void> {
-        this.logger.info('Uploading into', path)
-        let localPath = transfer.getFilePath()
-        this.uploadFileOrDirectory(localPath,path)
-
-        // const tempPath = path + '.tabby-upload'
-        // try {
-        //     const handle = await this.open(tempPath, 'w')
-        //     while (true) {
-        //         const chunk = await transfer.read()
-        //         if (!chunk.length) {
-        //             break
-        //         }
-        //         await handle.write(chunk)
-        //     }
-        //     handle.close()
-        //     try {
-        //         await this.unlink(path)
-        //     } catch { }
-        //     await this.rename(tempPath, path)
-        //     transfer.close()
-        // } catch (e) {
-        //     transfer.cancel()
-        //     this.unlink(tempPath)
-        //     throw e
-        // }
-    }
-
     async downloadFile (remotepath: string, localpath: string): Promise<void> {
         this.logger.info(`downloadFile from ${remotepath} to ${localpath}`)
         this.sftp.fastGet(remotepath, localpath,
@@ -239,26 +211,53 @@ export class SFTPSession {
         }
     }
 
+    async upload (path: string, transfer: FileUpload): Promise<void> {
+        this.logger.info('Uploading into', path)
+        // let localPath = transfer.getFilePath()
+        // this.uploadFileOrDirectory(localPath,path)
+        
+        const tempPath = path + '.tabby-upload'
+        try {
+            const handle = await this.open(tempPath, 'w')
+            while (true) {
+                const chunk = await transfer.read()
+                if (!chunk.length) {
+                    break
+                }
+                await handle.write(chunk)
+            }
+            handle.close()
+            try {
+                await this.unlink(path)
+            } catch { }
+            await this.rename(tempPath, path)
+            transfer.close()
+        } catch (e) {
+            transfer.cancel()
+            this.unlink(tempPath)
+            throw e
+        }
+    }
+    
     async download (path: string, transfer: FileDownload): Promise<void> {
         this.logger.info('Downloading', path)
-        let localpath = transfer.getFilePath()
-        this.downloadFile(path, localpath)
-        
-        // try {
-        //     const handle = await this.open(path, 'r')
-        //     while (true) {
-        //         const chunk = await handle.read()
-        //         if (!chunk.length) {
-        //             break
-        //         }
-        //         await transfer.write(chunk)
-        //     }
-        //     transfer.close()
-        //     handle.close()
-        // } catch (e) {
-        //     transfer.cancel()
-        //     throw e
-        // }
+        // let localpath = transfer.getFilePath()
+        // this.downloadFile(path, localpath)
+        try {
+            const handle = await this.open(path, 'r')
+            while (true) {
+                const chunk = await handle.read()
+                if (!chunk.length) {
+                    break
+                }
+                await transfer.write(chunk)
+            }
+            transfer.close()
+            handle.close()
+        } catch (e) {
+            transfer.cancel()
+            throw e
+        }
     }
 
     private _makeFile (p: string, entry: FileEntry): SFTPFile {
