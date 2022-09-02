@@ -30,7 +30,7 @@ export class CommonSFTPContextMenu extends SFTPContextMenuItemProvider {
             },
             {
                 click: async () => {
-                    await panel.downloadFileOrDirectory(item)
+                    await panel.download(item.isDirectory,item.fullPath, item.mode,item.size)
                 },
                 label: this.translate.instant('Download'),
             },

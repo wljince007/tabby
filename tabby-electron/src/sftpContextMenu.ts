@@ -35,7 +35,7 @@ export class EditSFTPContextMenu extends SFTPContextMenuItemProvider {
     private async edit (item: SFTPFile, sftp: SFTPSession) {
         const tempDir = (await tmp.dir({ unsafeCleanup: true })).path
         const tempPath = path.join(tempDir, item.name)
-        const transfer = await this.platform.startDownload(item.name, item.mode, item.size, tempPath)
+        const transfer = await this.platform.startDownload(false, item.name, item.mode, item.size, tempPath)
         if (!transfer) {
             return
         }

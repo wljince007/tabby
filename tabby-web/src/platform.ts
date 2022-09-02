@@ -115,7 +115,7 @@ export class WebPlatformService extends PlatformService {
         return null
     }
 
-    async startDownload (name: string, mode: number, size: number): Promise<FileDownload|null> {
+    async startDownload (isDirectory: boolean, name: string, mode: number, size: number): Promise<FileDownload|null> {
         const transfer = new HTMLFileDownload(name, mode, size)
         this.fileTransferStarted.next(transfer)
         return transfer
@@ -194,4 +194,8 @@ class HTMLFileDownload extends FileDownload {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     close (): void { }
+    
+    updateUiStr (uistr: string): void{ }
+
+    increaseCompletedBtyes(bsize: number) : void { }
 }

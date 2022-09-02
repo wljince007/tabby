@@ -141,7 +141,7 @@ export class VaultSettingsTabComponent extends BaseComponent {
         secret = (await this.vault.getSecret(secret.type, secret.key)) as VaultFileSecret
 
         const content = Buffer.from(secret.value, 'base64')
-        const download = await this.platform.startDownload(secret.key.description, 0o600, content.length)
+        const download = await this.platform.startDownload(false, secret.key.description, 0o600, content.length)
 
         if (download) {
             await download.write(content)

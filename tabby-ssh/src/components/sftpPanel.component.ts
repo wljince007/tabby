@@ -7,6 +7,7 @@ import { SSHSession } from '../session/ssh'
 import { SFTPContextMenuItemProvider } from '../api'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { SFTPCreateDirectoryModalComponent } from './sftpCreateDirectoryModal.component'
+import * as fsSync from 'fs';
 
 interface PathSegment {
     name: string
@@ -103,10 +104,10 @@ export class SFTPPanelComponent {
             if (stat.isDirectory) {
                 await this.navigate(item.fullPath)
             } else {
-                await this.download(item.fullPath, stat.mode, stat.size)
+                await this.download(false, item.fullPath, stat.mode, stat.size)
             }
         } else {
-            await this.download(item.fullPath, item.mode, item.size)
+            await this.download(false, item.fullPath, item.mode, item.size)
         }
     }
 
@@ -123,20 +124,7 @@ export class SFTPPanelComponent {
         }
     }
 
-    async downloadFileOrDirectory (item: SFTPFile): Promise<void> {
-            const itemPath = item.fullPath
-            const properties: any[]  = ['showHiddenFiles', 'createDirectory','treatPackageAsDirectory'];
-            const savepath = await this.platform.getSavePath(path.basename(itemPath), properties)
-            if (!savepath) {
-                return
-            }
-            this.sftp.downloadFileOrDirectory(itemPath, savepath)
-    }
-
     async upload (): Promise<void> {
-        // const properties: any[] = ['openFile', 'openDirectory', 'showHiddenFiles', 'createDirectory','treatPackageAsDirectory','multiSelections'];
-        // const transfers = await this.platform.getSelectFiles(properties)
-
         const transfers = await this.platform.startUpload({ multiple: true })
         await Promise.all(transfers.map(t => this.uploadOne(t)))
     }
@@ -144,18 +132,27 @@ export class SFTPPanelComponent {
     async uploadOne (transfer: FileUpload): Promise<void> {
         const savedPath = this.path
         // await this.sftp.upload(path.join(this.path, transfer.getName()), transfer)
-        await this.sftp.uploadFileOrDirectory(transfer.getFilePath(), path.join(this.path, transfer.getName()))
+        let localpathstates = fsSync.statSync(transfer.getFilePath());
+        if (localpathstates.isDirectory()) {
+            await this.sftp.uploadDirectory(path.join(this.path, transfer.getName()), transfer)
+        }else {
+            await this.sftp.upload(path.join(this.path, transfer.getName()), transfer)
+        }
         if (this.path === savedPath) {
             await this.navigate(this.path)
         }
     }
 
-    async download (itemPath: string, mode: number, size: number): Promise<void> {
-        const transfer = await this.platform.startDownload(path.basename(itemPath), mode, size)
+    async download (isDirectory:boolean, itemPath: string, mode: number, size: number): Promise<void> {
+        const transfer = await this.platform.startDownload(isDirectory, path.basename(itemPath), mode, size)
         if (!transfer) {
             return
         }
-        this.sftp.download(itemPath, transfer)
+        if　(isDirectory) {
+            this.sftp.downloadDirectory(itemPath, transfer)
+        }else {
+            this.sftp.download(itemPath, transfer)
+        }
     }
 
     getModeString (item: SFTPFile): string {

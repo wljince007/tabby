@@ -20,12 +20,15 @@ export interface MessageBoxResult {
     response: number
 }
 
-export abstract class FileTransfer {
-    abstract getName (): string
+export abstract class FileTransfer {    
+    abstract getName (): string    
     abstract getFilePath (): string
     abstract getMode (): number
     abstract getSize (): number
     abstract close (): void
+
+    abstract updateUiStr (uistr: string): void
+    abstract increaseCompletedBtyes(bsize: number) : void
 
     getSpeed (): number {
         return this.lastChunkSpeed
@@ -104,7 +107,7 @@ export abstract class PlatformService {
     abstract getSelectFiles (properties: any[]): Promise<string[]|null>
     abstract getSavePath (name: string, properties: any[]): Promise<string|null>
 
-    abstract startDownload (name: string, mode: number, size: number): Promise<FileDownload|null>
+    abstract startDownload (isDirectory:boolean, name: string, mode: number, size: number): Promise<FileDownload|null>
     abstract startUpload (options?: FileUploadOptions): Promise<FileUpload[]>
 
     startUploadFromDragEvent (event: DragEvent, multiple = false): FileUpload[] {
@@ -225,4 +228,9 @@ export class HTMLFileUpload extends FileUpload {
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     close (): void { }
+
+    updateUiStr (uistr: string): void{ }
+
+    increaseCompletedBtyes(bsize: number) : void { }
+
 }
