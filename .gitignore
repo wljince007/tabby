@@ -36,3 +36,5 @@ tabby-ssh/util/pagent.exe
 *.psd
 
 crowdin.yml
+
+*.map
