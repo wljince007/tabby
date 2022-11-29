@@ -72,6 +72,8 @@ export class SSHShellSession extends BaseSession {
                 this.destroy()
             }
         })
+        //连接成功之后执行启动脚本：tmux挂载
+        this.write(Buffer.from("tmux att || tmux\r"))
     }
 
     emitServiceMessage (msg: string): void {
