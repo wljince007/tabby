@@ -162,9 +162,9 @@ export class AppService {
      * Adds a new tab **without** wrapping it in a SplitTabComponent
      * @param inputs  Properties to be assigned on the new tab component instance
      */
-    openNewTabRaw <T extends BaseTabComponent> (params: NewTabParameters<T>): T {
+    openNewTabRaw <T extends BaseTabComponent> (params: NewTabParameters<T>, index: number|null = null): T {
         const tab = this.tabsService.create(params)
-        this.addTabRaw(tab)
+        this.addTabRaw(tab,index)
         return tab
     }
 
@@ -180,14 +180,30 @@ export class AppService {
         this.wrapAndAddTab(tab)
         return tab
     }
+    /**
+     * Adds a new tab while wrapping it in a SplitTabComponent
+     * @param inputs  Properties to be assigned on the new tab component instance
+     */
+    openNewTabNeer <T extends BaseTabComponent> (params: NewTabParameters<T>, index: number|null = null): T {
+        if (index ===null && this.activeTab) {
+            index = this.tabs.indexOf(this.activeTab) + 1
+        }
+        
+        if (params.type as any === SplitTabComponent) {
+            return this.openNewTabRaw(params,index)
+        }
+        const tab = this.tabsService.create(params)
+        this.wrapAndAddTab(tab,index)
+        return tab
+    }
 
     /**
      * Adds an existing tab while wrapping it in a SplitTabComponent
      */
-    wrapAndAddTab (tab: BaseTabComponent): SplitTabComponent {
+    wrapAndAddTab (tab: BaseTabComponent, index: number|null = null): SplitTabComponent {
         const splitTab = this.tabsService.create({ type: SplitTabComponent })
         splitTab.addTab(tab, null, 'r')
-        this.addTabRaw(splitTab)
+        this.addTabRaw(splitTab,index)
         return splitTab
     }
 

@@ -12,6 +12,7 @@ import { SSHProfile } from '../api'
 import { SSHShellSession } from '../session/shell'
 import { SSHMultiplexerService } from '../services/sshMultiplexer.service'
 
+
 /** @hidden */
 @Component({
     selector: 'ssh-tab',
@@ -258,6 +259,17 @@ export class SSHTabComponent extends BaseTerminalTabComponent {
             this.sftpPanelVisible = true
         }, 100)
     }
+    async openSFTPInNewTab (): Promise<void> {
+        // this.sftpPath = await this.session?.getWorkingDirectory() ?? this.sftpPath
+        // setTimeout(() => {
+        //     this.sftpPanelVisible = true
+        // }, 100)
+        const profile = await this.profilesService.showProfileSelector()
+        if (profile) {
+            this.profilesService.launchProfile(profile)
+        }
+    }
+
 
     @HostListener('click')
     onClick (): void {

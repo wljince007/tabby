@@ -37,7 +37,8 @@ export class ProfilesService {
     async openNewTabForProfile <P extends Profile> (profile: PartialProfile<P>): Promise<BaseTabComponent|null> {
         const params = await this.newTabParametersForProfile(profile)
         if (params) {
-            return this.app.openNewTab(params)
+            // return this.app.openNewTab(params)
+            return this.app.openNewTabNeer(params)
         }
         return null
     }
