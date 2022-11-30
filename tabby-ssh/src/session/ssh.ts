@@ -223,7 +223,7 @@ export class SSHSession {
                 if (this.savedPassword) {
                     this.passwordStorage.savePassword(this.profile, this.savedPassword)
                 }
-
+                
                 this.zone.run(resolve)
             })
             ssh.on('error', error => {

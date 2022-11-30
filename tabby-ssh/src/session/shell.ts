@@ -72,8 +72,27 @@ export class SSHShellSession extends BaseSession {
                 this.destroy()
             }
         })
+
         //连接成功之后执行启动脚本：tmux挂载
-        this.write(Buffer.from("tmux att || tmux\r"))
+        if (this.profile.options.userLoginScripts === undefined ||  
+            this.profile.options.userLoginScripts.length == 0){
+                this.profile.options.userLoginScripts = "tmux att || tmux"
+        }
+        if (this.profile.options.userLoginScriptsDelay === undefined ||
+            this.profile.options.userLoginScriptsDelay == 0){
+                this.profile.options.userLoginScriptsDelay = 300
+        }
+        if (this.profile.options.userLoginScripts 
+                && this.profile.options.userLoginScripts.length > 0
+                && this.profile.options.userLoginScriptsDelay 
+                && this.profile.options.userLoginScriptsDelay > 0
+                ){
+            let userLoginScriptsDelay = this.profile.options.userLoginScriptsDelay
+            let userLoginScripts = this.profile.options.userLoginScripts + "\r\n"
+            setTimeout(() => {
+                this.write(Buffer.from(userLoginScripts))
+            }, userLoginScriptsDelay)
+        }
     }
 
     emitServiceMessage (msg: string): void {
