@@ -38,7 +38,7 @@ export class ProfilesService {
         const params = await this.newTabParametersForProfile(profile)
         if (params) {
             // return this.app.openNewTab(params)
-            return this.app.openNewTabNeer(params)
+            return this.app.openNewTabAtActiveTabNext(params)
         }
         return null
     }

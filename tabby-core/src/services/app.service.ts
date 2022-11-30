@@ -184,7 +184,8 @@ export class AppService {
      * Adds a new tab while wrapping it in a SplitTabComponent
      * @param inputs  Properties to be assigned on the new tab component instance
      */
-    openNewTabNeer <T extends BaseTabComponent> (params: NewTabParameters<T>, index: number|null = null): T {
+     openNewTabAtActiveTabNext <T extends BaseTabComponent> (params: NewTabParameters<T>): T {
+        let index: number | null = null
         if (index ===null && this.activeTab) {
             index = this.tabs.indexOf(this.activeTab) + 1
         }
