@@ -249,12 +249,12 @@ ul.nav-tabs(ngbNav, #nav='ngbNav')
                         checkbox([text]='alg', [(ngModel)]='algorithms.serverHostKey[alg]')
 
     li(ngbNavItem)
-        a(ngbNavLink, translate) UserLoginScripts
+        a(ngbNavLink, translate) Expects
         ng-template(ngbNavContent)
             login-scripts-settings([options]='profile.options', #loginScriptsSettings)
 
     li(ngbNavItem)
-        a(ngbNavLink, translate) User Script
+        a(ngbNavLink, translate) Login scripts
         ng-template(ngbNavContent)
             .form-line
                 .header
