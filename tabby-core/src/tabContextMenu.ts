@@ -121,6 +121,10 @@ export class CommonOptionsContextMenu extends TabContextMenuItemProvider {
                     click: () => this.app.duplicateTab(tab),
                 },
                 {
+                    label: this.translate.instant('Sftp'),
+                    click: () => this.app.sftpTab(tab),
+                },
+                {
                     label: this.translate.instant('Color'),
                     sublabel: currentColor ? this.translate.instant(currentColor) : undefined,
                     submenu: TAB_COLORS.map(color => ({

@@ -349,6 +349,10 @@ export class AppService {
         tab.destroy()
     }
 
+    async sftpTab (tab: BaseTabComponent): Promise<BaseTabComponent|null> {
+        return await tab.openSftp()
+    }
+
     async duplicateTab (tab: BaseTabComponent): Promise<BaseTabComponent|null> {
         const dup = await this.tabsService.duplicate(tab)
         if (dup) {
