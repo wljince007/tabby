@@ -263,8 +263,18 @@ export class SSHTabComponent extends BaseTerminalTabComponent {
     }
 
     async openSftp (): Promise<BaseTabComponent|null>{
-        const profileName = "sftp_mac_template"
-        let tmpprofile = (await this.profilesService.getProfiles()).find(x => x.name === "sftp_mac_template")
+        let profileName =""
+        if (this.hostApp.platform === Platform.macOS) {
+            profileName = "ssh2sftp_mac_template"
+        } else if (this.hostApp.platform === Platform.Linux) {
+            profileName = "ssh2sftp_linux_template"
+        } else if (this.hostApp.platform === Platform.Windows){
+            profileName = "ssh2sftp_win_template"
+        } else if (this.hostApp.platform === Platform.Web){
+            return null
+        }
+
+        let tmpprofile = (await this.profilesService.getProfiles()).find(x => x.name === "ssh2sftp_mac_template")
         if (!tmpprofile) {
             console.error('Requested profile', profileName, 'not found')
             return null
