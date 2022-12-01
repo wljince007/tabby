@@ -274,7 +274,7 @@ export class SSHTabComponent extends BaseTerminalTabComponent {
             return null
         }
 
-        let tmpprofile = (await this.profilesService.getProfiles()).find(x => x.name === "ssh2sftp_mac_template")
+        let tmpprofile = (await this.profilesService.getProfiles()).find(x => x.name === profileName)
         if (!tmpprofile) {
             console.error('Requested profile', profileName, 'not found')
             return null
