@@ -32,6 +32,11 @@ profiles:
     icon: fas fa-terminal
     options:
       command: /usr/bin/sftp
+      args:
+        - '-oStrictHostKeyChecking=no'
+        - '-oServerAliveInterval=30'
+        - '-oServerAliveCountMax=1051200'
+        - '-oTCPKeepAlive=yes'
       env: {}
       cwd: ''
     group: ssh2sftp_template
@@ -41,6 +46,11 @@ profiles:
     icon: fas fa-terminal
     options:
       command: /usr/bin/sftp
+      args:
+        - '-oStrictHostKeyChecking=no'
+        - '-oServerAliveInterval=30'
+        - '-oServerAliveCountMax=1051200'
+        - '-oTCPKeepAlive=yes'
       env: {}
       cwd: ''
     group: ssh2sftp_template
@@ -51,8 +61,10 @@ profiles:
     options:
       command: /usr/local/opt/openssh/bin/sftp
       args:
-        - '-o'
-        - StrictHostKeyChecking=no
+        - '-oStrictHostKeyChecking=no'
+        - '-oServerAliveInterval=30'
+        - '-oServerAliveCountMax=1051200'
+        - '-oTCPKeepAlive=yes'
       env: {}
       cwd: ''
     id: local:custom:ssh2sftp_mac_template:33162a26-7807-4c5e-ac2d-68cd2d9a4a24
