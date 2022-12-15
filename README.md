@@ -41,6 +41,55 @@ This README is also available in: <a  href="./README.ru-RU.md">:ru: Русски
 * Proper shell experience on Windows including tab completion (via Clink)
 * Integrated encrypted container for SSH secrets and configuration
 * SSH, SFTP and Telnet client available as a [web app](https://tabby.sh/app) (also [self-hosted](https://github.com/Eugeny/tabby-web)).
+* 支持连接成功之后自动执行命令，实现tmux自动挂载，连接成功之后自动发送「tmux attach || tmux」，参见默认ssh配置
+* 支持创建sftp标签页，sftp标签使用系统上的sftp可执行程序，当点击ssh页面上的「SFTPInNewTab」按钮，或通过「Sftp tab」对应的快捷键触发时，会在当前ssh页后面使用如下的ssh2sftp_template中的配置创建sftp标签页，会拼接ssh中指定的端口用户名和地址到sftp的args中，从而调用系统上的sftp命令。
+* ssh2sftp_template 会在profiles为空时保存到用户配置文件
+* sftp会要找对应平台上的模板来创建sftp标签页，ssh2sftp_win_template中的sftp需要指定到可用的sftp进程位置，否则无法创建sftp标签页，推荐使用git包中带的sftp（c:\git\usr\bin\sftp.exe），会有tab有补全功能：，模板如下：
+```
+profiles:
+  - type: local
+    name: ssh2sftp_win_template
+    icon: fas fa-terminal
+    options:
+      command: /usr/bin/sftp
+      args:
+        - '-oStrictHostKeyChecking=no'
+        - '-oServerAliveInterval=30'
+        - '-oServerAliveCountMax=1051200'
+        - '-oTCPKeepAlive=yes'
+      env: {}
+      cwd: ''
+    group: ssh2sftp_template
+    id: local:custom:ssh2sftp_win_template:c617da05-d05c-482d-8ca6-3c7eb99452e9
+  - type: local
+    name: ssh2sftp_linux_template
+    icon: fas fa-terminal
+    options:
+      command: /usr/bin/sftp
+      args:
+        - '-oStrictHostKeyChecking=no'
+        - '-oServerAliveInterval=30'
+        - '-oServerAliveCountMax=1051200'
+        - '-oTCPKeepAlive=yes'
+      env: {}
+      cwd: ''
+    group: ssh2sftp_template
+    id: local:custom:ssh2sftp_linux_template:6c4bcc75-f690-482a-a882-40e1c9851a3d
+  - type: local
+    name: ssh2sftp_mac_template
+    icon: fas fa-terminal
+    options:
+      command: /usr/local/opt/openssh/bin/sftp
+      args:
+        - '-oStrictHostKeyChecking=no'
+        - '-oServerAliveInterval=30'
+        - '-oServerAliveCountMax=1051200'
+        - '-oTCPKeepAlive=yes'
+      env: {}
+      cwd: ''
+    id: local:custom:ssh2sftp_mac_template:33162a26-7807-4c5e-ac2d-68cd2d9a4a24
+    group: ssh2sftp_template
+```
 
 # Contents <!-- omit in toc -->
 
