@@ -10,7 +10,10 @@ exports.version = exports.version.substring(1).trim()
 exports.version = exports.version.replace('-', '-c')
 
 if (exports.version.includes('-c')) {
-    exports.version = semver.inc(exports.version, 'prepatch').replace('-0', `-nightly.${process.env.REV ?? 0}`)
+    let version = semver.inc(exports.version, 'prepatch')
+    if (version!=null) {
+        exports.version = version.replace('-0', `-nightly.${process.env.REV ?? 0}`)
+    }
 }
 
 exports.builtinPlugins = [
