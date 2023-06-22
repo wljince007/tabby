@@ -120,6 +120,9 @@ export class AppRootComponent {
                 if (hotkey === 'move-tab-right') {
                     this.app.moveSelectedTabRight()
                 }
+                if (hotkey === 'sftp-tab') {
+                    this.app.sftpTab(this.app.activeTab)
+                }
                 if (hotkey === 'duplicate-tab') {
                     this.app.duplicateTab(this.app.activeTab)
                 }

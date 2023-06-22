@@ -222,7 +222,7 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
     /** @hidden */
     private focusedTab: BaseTabComponent|null = null
     private maximizedTab: BaseTabComponent|null = null
-    private viewRefs: Map<BaseTabComponent, EmbeddedViewRef<any>> = new Map()
+    viewRefs: Map<BaseTabComponent, EmbeddedViewRef<any>> = new Map()
 
     private tabAdded = new Subject<BaseTabComponent>()
     private tabAdopted = new Subject<BaseTabComponent>()
@@ -230,6 +230,16 @@ export class SplitTabComponent extends BaseTabComponent implements AfterViewInit
     private splitAdjusted = new Subject<SplitSpannerInfo>()
     private focusChanged = new Subject<BaseTabComponent>()
     private initialized = new Subject<void>()
+
+    async openSftp (): Promise<BaseTabComponent|null>{
+        for (let key of this.viewRefs.keys()) {
+            let ans = await key.openSftp()
+            if (ans) {
+                return ans
+            }
+        }
+        return null
+    }
 
     get tabAdded$ (): Observable<BaseTabComponent> { return this.tabAdded }
 

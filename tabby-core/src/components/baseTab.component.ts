@@ -46,6 +46,11 @@ export abstract class BaseTabComponent extends BaseComponent {
      */
     hostView: ViewRef
 
+    //打开ssh的sftp页
+    async openSftp (): Promise<BaseTabComponent|null>{
+        return null
+    }
+    
     /**
      * CSS color override for the tab's header
      */
