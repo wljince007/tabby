@@ -104,6 +104,7 @@
     "build:typings": "node scripts/build-typings.mjs",
     "watch": "cross-env TABBY_DEV=1 webpack --progress --color --watch",
     "start": "cross-env TABBY_DEV=1 electron app -d --inspect",
+    "start:sftptab": "cross-env TABBY_DEV=1 TABBY_PLUGINS=/Users/gopath/src/github.com/wljince007/tabby-sftp-tab electron app -d --inspect",
     "start:prod": "electron app --debug",
     "prod": "cross-env TABBY_DEV=1 electron app",
     "docs": "node scripts/build-docs.mjs",
